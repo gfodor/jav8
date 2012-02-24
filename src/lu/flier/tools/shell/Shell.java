@@ -19,16 +19,13 @@ public class Shell {
     }
 
     public void shutdown() {
-        System.err.println("GC TIME");
         eng = null;
         System.gc();
     }
 
     public Object evaluateScript(String scriptText, String[] args) throws ScriptException, IOException {
         if (eng == null) {
-            System.err.println("INSIDE");
             eng = new ScriptEngineManager().getEngineByName("jav8");
-            System.err.println("GOT IT");
 
             Bindings scope = eng.getBindings(ScriptContext.ENGINE_SCOPE);
             scope.put("Jav8Shell", this);
