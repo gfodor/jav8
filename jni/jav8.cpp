@@ -32,9 +32,7 @@ void JNICALL Java_lu_flier_script_ManagedV8Object_internalRelease
 {
   if (ptr) 
   { 
-    jni::V8Isolate isolate;
-
-    if (isolate.IsAlive()) {
+    if (jni::V8Isolate::IsAlive()) {
       v8::Persistent<v8::Object>((v8::Object *) ptr).Dispose(); 
     }
   }
@@ -43,7 +41,7 @@ void JNICALL Java_lu_flier_script_ManagedV8Object_internalRelease
 void JNICALL Java_lu_flier_script_V8ScriptEngine_gc
   (JNIEnv *, jclass)
 {
-  jni::V8Isolate isolate;
+  jni::V8Isolate::ensureInIsolate();
 
   #ifdef USE_INTERNAL_V8_API
     HEAP->CollectAllAvailableGarbage();
@@ -55,7 +53,7 @@ void JNICALL Java_lu_flier_script_V8ScriptEngine_gc
 void JNICALL Java_lu_flier_script_V8ScriptEngine_lowMemory
   (JNIEnv *, jclass)
 {
-  jni::V8Isolate isolate;
+  jni::V8Isolate::ensureInIsolate();
 
   v8::V8::LowMemoryNotification();
 }
@@ -63,7 +61,7 @@ void JNICALL Java_lu_flier_script_V8ScriptEngine_lowMemory
 jboolean JNICALL Java_lu_flier_script_V8ScriptEngine_idle
   (JNIEnv *, jclass)
 {
-  jni::V8Isolate isolate;
+  jni::V8Isolate::ensureInIsolate();
 
   return v8::V8::IdleNotification() ? JNI_TRUE : JNI_FALSE;
 }
@@ -119,9 +117,7 @@ void JNICALL Java_lu_flier_script_V8CompiledScript_internalRelease
   (JNIEnv *, jobject, jlong ptr)
 {  
   if (ptr) { 
-    jni::V8Isolate isolate;
-
-    if (isolate.IsAlive()) {
+    if (jni::V8Isolate::IsAlive()) {
       v8::Persistent<v8::Script>((v8::Script *) ptr).Dispose(); 
     }
   }
@@ -175,9 +171,10 @@ jboolean JNICALL Java_lu_flier_script_V8Context_inContext(JNIEnv *pEnv, jclass)
 
 jlong JNICALL Java_lu_flier_script_V8Context_internalCreate(JNIEnv *pEnv, jobject pObj)
 {
-  jni::V8Env env(pEnv);
-
+  jni::V8Isolate::ensureInIsolate();
   v8::Handle<v8::Context> ctxt = v8::Context::New();
+
+  jni::V8Env env(pEnv);
 
   v8::Context::Scope context_scope(ctxt);
 
@@ -190,9 +187,7 @@ void JNICALL Java_lu_flier_script_V8Context_internalRelease
   (JNIEnv *pEnv, jobject, jlong ptr)
 {
   if (ptr) { 
-    jni::V8Isolate isolate;
-
-    if (isolate.IsAlive()) {
+    if (jni::V8Isolate::IsAlive()) {
       v8::Persistent<v8::Context> ctxt((v8::Context *) ptr);
 
       ctxt->Exit();

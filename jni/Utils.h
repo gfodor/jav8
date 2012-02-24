@@ -260,10 +260,10 @@ public:
   bool ThrowIf(const v8::TryCatch& try_catch);
 };
 
-struct V8Isolate {
-  V8Isolate();
-
-  bool IsAlive();
+class V8Isolate {
+  public: 
+    static bool IsAlive();
+    static void ensureInIsolate();
 };
 
 class V8Env : public Env, public V8Isolate {
@@ -272,7 +272,6 @@ class V8Env : public Env, public V8Isolate {
 public:
   V8Env(JNIEnv *env) : Env(env) 
   {
-
   }
   virtual ~V8Env() { ThrowIf(try_catch); }
 

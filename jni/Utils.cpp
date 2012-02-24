@@ -36,10 +36,14 @@ Cache& Cache::GetInstance(JNIEnv *env)
   if (!s_caches_key)
   {
     pthread_key_create(&s_caches_key, NULL); 
-    pthread_setspecific(s_caches_key, new caches_t());
   }
 
   caches_t *s_caches = (caches_t *) pthread_getspecific(s_caches_key);
+
+  if (!s_caches) {
+    s_caches = new caches_t();
+    pthread_setspecific(s_caches_key, new caches_t());
+  }
 #else
   if (!s_caches) s_caches = new caches_t();
 #endif
@@ -612,24 +616,26 @@ jobject Env::NewV8Context(v8::Handle<v8::Context> ctxt)
 
 #ifdef V8_SUPPORT_ISOLATE
 
-V8Isolate::V8Isolate() {
+void V8Isolate::ensureInIsolate() {
   if (v8::Isolate::GetCurrent() == NULL) 
   {
-    v8::Isolate::New()->Enter();
+      v8::Isolate* isolate = v8::Isolate::New();
+      isolate->Enter();
+      assert(isolate == v8::Isolate::GetCurrent());
 
-  #ifdef USE_INTERNAL_V8_API
-    v8::internal::Isolate::Current()->InitializeLoggingAndCounters();
-  #endif
+    #ifdef USE_INTERNAL_V8_API
+      v8::internal::Isolate::Current()->InitializeLoggingAndCounters();
+    #endif
   }
 }
 
 bool V8Isolate::IsAlive() {
-  return !v8::V8::IsExecutionTerminating(v8::Isolate::GetCurrent()) && !v8::V8::IsDead();
+  return v8::Isolate::GetCurrent() != NULL && !v8::V8::IsExecutionTerminating(v8::Isolate::GetCurrent()) && !v8::V8::IsDead();
 }
 
 #else
 
-V8Isolate::V8Isolate() {}
+void V8Isolate::ensureInIsolate() { }
 
 bool V8Isolate::IsAlive() { return !v8::V8::IsExecutionTerminating() && !v8::V8::IsDead(); }
 
