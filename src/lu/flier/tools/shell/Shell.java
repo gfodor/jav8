@@ -2,6 +2,7 @@ package lu.flier.tools.shell;
 
 import lu.flier.script.V8Array;
 import lu.flier.script.V8Object;
+import lu.flier.script.V8ScriptEngine;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -64,6 +65,10 @@ public class Shell {
         }
 
         return eng.eval(scriptText);
+    }
+
+    public V8Object createObject() {
+        return ((V8ScriptEngine)eng).createObject();
     }
 
     public void injectObject(String var, Object object) {
