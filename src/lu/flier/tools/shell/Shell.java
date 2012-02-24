@@ -14,37 +14,77 @@ public class Shell {
     private ScriptEngine eng;
     private String[] args;
 
-    public void evaluateScript(String scriptText, String[] args) throws ScriptException, IOException {
-        eng = new ScriptEngineManager().getEngineByName("jav8");
-        this.args = args;
+    public Object evaluateScript(String scriptText) throws ScriptException, IOException {
+        return this.evaluateScript(scriptText, null);
+    }
 
+    public void shutdown() {
+        System.err.println("GC TIME");
+        eng = null;
+        System.gc();
+    }
+
+    public Object evaluateScript(String scriptText, String[] args) throws ScriptException, IOException {
+        if (eng == null) {
+            System.err.println("INSIDE");
+            eng = new ScriptEngineManager().getEngineByName("jav8");
+            System.err.println("GOT IT");
+
+            Bindings scope = eng.getBindings(ScriptContext.ENGINE_SCOPE);
+            scope.put("Jav8Shell", this);
+
+            eng.eval("var exports = {};");
+            eng.eval("this.setTimeout = function(f, t) { f(); }");
+            eng.eval("this.clearTimeout = function(t) { }");
+            eng.eval("this.setInterval = function(f, t) { throw new Error(\"Intervals not supported\"); }");
+            eng.eval("this.clearInterval = function(t) { throw new Error(\"Intervals not supported\"); }");
+            eng.eval("var arguments = Jav8Shell.getArgs();");
+            eng.eval("var environment = null;");
+            eng.eval("var history = null;");
+            eng.eval("var help = function() { return Jav8Shell.help(); };");
+            eng.eval("var defineClass = function() { throw new Error(\"defineClass not implemented.\"); };");
+            eng.eval("var deserialize = function() { throw new Error(\"deserialize not implemented.\"); };");
+            eng.eval("var gc = function() { return Jav8Shell.gc(); };");
+            eng.eval("var load = function(f) { return Jav8Shell.load(f); };");
+            eng.eval("var loadClass = function() { throw new Error(\"loadClass not implemented.\"); };");
+            eng.eval("var print = function(arr) { return Jav8Shell.print(arr); };");
+            eng.eval("var readFile = function(f) { return Jav8Shell.readFile(f); };");
+            eng.eval("var readUrl = function(f) { return Jav8Shell.readUrl(f); };");
+            eng.eval("var runCommand = function() { throw new Error(\"runCommand not implemented.\"); };");
+            eng.eval("var seal = function() { throw new Error(\"seal not implemented.\"); };");
+            eng.eval("var serialize = function() { throw new Error(\"serialize not implemented.\"); };");
+            eng.eval("var spawn = function() { throw new Error(\"spawn not implemented.\"); };");
+            eng.eval("var quit = function() { return Jav8Shell.quit(); };");
+            eng.eval("var version = function() { throw new Error(\"version not implemented.\"); };");
+            eng.eval("var fileExists = function(f) { return Jav8Shell.fileExists(f); };");
+
+            eng.eval("var console = { log: function() {  var args = []; for (var i = 0; i < arguments.length; i++) " +
+                    "{ args[args.length] = arguments[i]; } print(args); } };");
+        }
+
+        if (args != null) {
+            this.args = args;
+        }
+
+        return eng.eval(scriptText);
+    }
+
+    public void injectObject(String var, Object object) {
         Bindings scope = eng.getBindings(ScriptContext.ENGINE_SCOPE);
-        scope.put("Jav8Shell", this);
+        scope.put(var, object);
+    }
 
-        eng.eval("var arguments = Jav8Shell.getArgs();");
-        eng.eval("var environment = null;");
-        eng.eval("var history = null;");
-        eng.eval("var help = function() { return Jav8Shell.help(); };");
-        eng.eval("var defineClass = function() { throw new Exception(\"defineClass not implemented.\"); };");
-        eng.eval("var deserialize = function() { throw new Exception(\"deserialize not implemented.\"); };");
-        eng.eval("var gc = function() { return Jav8Shell.gc(); };");
-        eng.eval("var load = function(f) { return Jav8Shell.load(f); };");
-        eng.eval("var loadClass = function() { throw new Exception(\"loadClass not implemented.\"); };");
-        eng.eval("var print = function(arr) { return Jav8Shell.print(arr); };");
-        eng.eval("var readFile = function(f) { return Jav8Shell.readFile(f); };");
-        eng.eval("var readUrl = function(f) { return Jav8Shell.readUrl(f); };");
-        eng.eval("var runCommand = function() { throw new Exception(\"runCommand not implemented.\"); };");
-        eng.eval("var seal = function() { throw new Exception(\"seal not implemented.\"); };");
-        eng.eval("var serialize = function() { throw new Exception(\"serialize not implemented.\"); };");
-        eng.eval("var spawn = function() { throw new Exception(\"spawn not implemented.\"); };");
-        eng.eval("var quit = function() { return Jav8Shell.quit(); };");
-        eng.eval("var version = function() { throw new Exception(\"version not implemented.\"); };");
-        eng.eval("var fileExists = function(f) { return Jav8Shell.fileExists(f); };");
+    public Object extractObject(String name) {
+        Bindings scope = eng.getBindings(ScriptContext.ENGINE_SCOPE);
+        return scope.get(name);
+    }
 
-        eng.eval("var console = { log: function() {  var args = []; for (var i = 0; i < arguments.length; i++) " +
-                "{ args[args.length] = arguments[i]; } print(args); } };");
+    public void invokeMethod(Object target, String name, Object... objects) throws ScriptException, NoSuchMethodException {
+        ((Invocable)eng).invokeMethod(target, name, objects);
+    }
 
-        eng.eval(scriptText);
+    public void invokeFunction(String name, Object... objects) throws ScriptException, NoSuchMethodException {
+        ((Invocable)eng).invokeFunction(name, objects);
     }
 
     public boolean fileExists(String path) {
