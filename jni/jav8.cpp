@@ -226,6 +226,13 @@ jobject JNICALL Java_lu_flier_script_V8Context_internalGetGlobal
   return env.HasCaught() ? NULL : env.NewV8Object(global);
 }
 
+JNIEXPORT jobject JNICALL Java_lu_flier_script_V8Context_internalCreateObject
+  (JNIEnv *pEnv, jobject) {
+  jni::V8Env env(pEnv);
+
+  return env.NewV8Object(v8::Object::New());
+}
+
 jobjectArray JNICALL Java_lu_flier_script_V8Object_internalGetKeys(JNIEnv *pEnv, jobject pObj)
 {
   jni::V8Env env(pEnv);

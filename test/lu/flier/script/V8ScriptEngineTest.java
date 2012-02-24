@@ -238,7 +238,26 @@ public class V8ScriptEngineTest
     	
     	assertArrayEquals(new Object[] {1, 2, 3}, array.toArray());    	
     }
-    
+
+    @Test
+    public void testCreateJavascriptObject() throws ScriptException, NoSuchMethodException
+    {
+    	Bindings engineScope = this.eng.getBindings(ScriptContext.ENGINE_SCOPE);
+
+        eng.eval("var newVar;");
+        V8Object temp = ((V8ScriptEngine)this.eng).createObject();
+        temp.put("foo", "bar");
+        temp.put("biz", 123);
+        engineScope.put("newVar", temp);
+
+        eng.eval("var z = newVar; var a = newVar.foo; var b = newVar.biz; var c = newVar.baz;");
+        assertEquals(V8Object.class, engineScope.get("z").getClass());
+        assertEquals("bar", ((V8Object)engineScope.get("z")).get("foo"));
+        assertEquals("bar", engineScope.get("a"));
+        assertEquals(123, engineScope.get("b"));
+        assertEquals(null, engineScope.get("c"));
+    }
+
     @Test
     public void testDate() throws ScriptException, NoSuchMethodException
     {

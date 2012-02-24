@@ -68,6 +68,10 @@ public class V8Context extends SimpleScriptContext
 		}
 	}
 
+    public V8Object createObject() {
+        return (V8Object)internalCreateObject().bindTo(this);
+    }
+
 	public void dispose()
 	{
 		if (this.ctxt > 0) 
@@ -91,6 +95,7 @@ public class V8Context extends SimpleScriptContext
 	public native static V8Context getCurrent();
 	public native static V8Context getCalling();
 	public native static boolean inContext();
+    public native V8Object internalCreateObject();
 	
 	public void enter()
 	{

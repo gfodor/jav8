@@ -752,6 +752,12 @@ v8::Handle<v8::Value> V8Env::Wrap(jobject value)
   {
     result = CJavaContext::Wrap(m_env, value);  
   } 
+  else if (IsAssignableFrom(clazz, buildins.lu.flier.script.V8Object)) 
+  {
+    jclass clazz = m_env->GetObjectClass(value);
+    jfieldID fid = GetFieldID(clazz, "obj", "J");
+    result = v8::Handle<v8::Object>((v8::Object *) m_env->GetLongField(value, fid));
+  }
   else 
   { 
     static jmethodID mid = GetMethodID(buildins.java.lang.Class, "isArray", "()Z");
