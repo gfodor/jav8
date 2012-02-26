@@ -582,6 +582,9 @@ public class V8ScriptEngineTest
         this.eng.eval("var d = arr.length; var a = arr[0];");
         assertEquals(1, g.get("d"));
         assertEquals(123, g.get("a"));
+
+        arr.setElements(new Object[] { 456 });
+        assertEquals(456, arr.get(0));
     }
 
     @Test 

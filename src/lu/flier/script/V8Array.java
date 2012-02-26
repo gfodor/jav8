@@ -42,7 +42,12 @@ public class V8Array extends AbstractList<Object> implements V8ContextAware {
         return internalToObjectArray(array.obj);
     }
 
+    public void setElements(Object[] elements) {
+        this.internalSetElements(this.obj, elements);
+    }
+
 	private native Object internalGet(long obj, int index);
+	private native void internalSetElements(long obj, Object[] elements);
 	private native int internalGetSize(long obj);
 	private native Object[] internalToObjectArray(long obj);
 }
