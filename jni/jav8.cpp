@@ -240,8 +240,9 @@ JNIEXPORT jobject JNICALL Java_lu_flier_script_V8Context_internalCreateArray
   int size = pEnv->GetArrayLength(source);
   v8::Handle<v8::Array> array = v8::Array::New(size);
 
-  for (int i = 0; i < size; i++) {
-      array->Set(i, env.Wrap(pEnv->GetObjectArrayElement(source, i)));
+  for (size_t i = 0; i < size; i++) {
+      jobject item = pEnv->GetObjectArrayElement(source, i);
+      array->Set(i, env.Wrap(item));
   }
 
   return env.NewV8Array(array);

@@ -5,12 +5,14 @@ import java.util.AbstractList;
 
 public class V8Array extends AbstractList<Object> implements V8ContextAware {	
 	private final ManagedV8Object array;
+    private long obj;
 	
 	private V8Context ctxt;
 	
 	V8Array(long obj) {
 		this.array = new ManagedV8Object(obj);
 		this.ctxt = V8Context.getCurrent();
+        this.obj = obj;
 	}
 
 	@Override

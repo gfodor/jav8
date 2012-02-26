@@ -71,8 +71,8 @@ public class Shell {
         return ((V8ScriptEngine)eng).createObject();
     }
 
-    public V8Array createArray(int size) {
-        return ((V8ScriptEngine)eng).createArray(size);
+    public V8Array createArray(Object[] data) {
+        return ((V8ScriptEngine)eng).createArray(data);
     }
 
     public void injectObject(String var, Object object) {

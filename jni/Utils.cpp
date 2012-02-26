@@ -726,7 +726,7 @@ v8::Handle<v8::Value> V8Env::Wrap(jobject value)
   v8::Handle<v8::Value> result;
 
   jclass clazz = m_env->GetObjectClass(value);
-    
+
   if (IsAssignableFrom(clazz, buildins.java.lang.String)) 
   {
     jstring str = (jstring) value;
@@ -771,6 +771,12 @@ v8::Handle<v8::Value> V8Env::Wrap(jobject value)
   else if (IsAssignableFrom(clazz, buildins.lu.flier.script.V8Context)) 
   {
     result = CJavaContext::Wrap(m_env, value);  
+  } 
+  else if (IsAssignableFrom(clazz, buildins.lu.flier.script.V8Array)) 
+  {
+    jclass clazz = m_env->GetObjectClass(value);
+    jfieldID fid = GetFieldID(clazz, "obj", "J");
+    result = v8::Handle<v8::Array>((v8::Array *) m_env->GetLongField(value, fid));
   } 
   else if (IsAssignableFrom(clazz, buildins.lu.flier.script.V8Object)) 
   {

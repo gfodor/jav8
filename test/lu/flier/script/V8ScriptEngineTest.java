@@ -573,11 +573,15 @@ public class V8ScriptEngineTest
     public void testCreateArray() throws ScriptException {
     	V8Context ctxt = ((V8ScriptEngine) this.eng).getV8Context();
         Bindings g = this.eng.getBindings(ScriptContext.ENGINE_SCOPE);
-        Object[] data = new Object[] { "hello", 123 };
+        this.eng.eval("var arr;");
+        Object[] data = new Object[] { 123 };
         V8Array arr = ctxt.createArray(data);
-        assertEquals(2, arr.size());
-        assertEquals("hello", arr.get(0));
-        assertEquals(123, arr.get(1));
+        assertEquals(1, arr.size());
+        assertEquals(123, arr.get(0));
+        g.put("arr", ctxt.createArray(data));
+        this.eng.eval("var d = arr.length; var a = arr[0];");
+        assertEquals(1, g.get("d"));
+        assertEquals(123, g.get("a"));
     }
 
     @Test 
