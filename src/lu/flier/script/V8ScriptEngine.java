@@ -46,6 +46,10 @@ public final class V8ScriptEngine extends AbstractScriptEngine implements Invoca
     public V8Object createObject() {
         return getV8Context().createObject();
     }
+
+    public V8Array createArray(int size) {
+        return getV8Context().createArray(size);
+    }
         
     private String readAll(Reader reader) throws IOException
     {

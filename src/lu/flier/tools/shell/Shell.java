@@ -71,6 +71,10 @@ public class Shell {
         return ((V8ScriptEngine)eng).createObject();
     }
 
+    public V8Array createArray(int size) {
+        return ((V8ScriptEngine)eng).createArray(size);
+    }
+
     public void injectObject(String var, Object object) {
         Bindings scope = eng.getBindings(ScriptContext.ENGINE_SCOPE);
         scope.put(var, object);
@@ -81,8 +85,8 @@ public class Shell {
         return scope.get(name);
     }
 
-    public void invokeMethod(Object target, String name, Object... objects) throws ScriptException, NoSuchMethodException {
-        ((Invocable)eng).invokeMethod(target, name, objects);
+    public Object invokeMethod(Object target, String name, Object... objects) throws ScriptException, NoSuchMethodException {
+        return ((Invocable)eng).invokeMethod(target, name, objects);
     }
 
     public void invokeFunction(String name, Object... objects) throws ScriptException, NoSuchMethodException {
