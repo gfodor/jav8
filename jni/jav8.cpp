@@ -356,6 +356,16 @@ jobject JNICALL Java_lu_flier_script_V8Array_internalGet
   return env.HasCaught() ? NULL : env.Wrap(value);
 }
 
+jobjectArray JNICALL Java_lu_flier_script_V8Array_internalToObjectArray
+  (JNIEnv *pEnv, jobject pObj, jlong pArray)
+{
+  jni::V8Env env(pEnv);
+
+  v8::Handle<v8::Array> array((v8::Array *)pArray);
+
+  return env.HasCaught() ? NULL : env.WrapArrayToNative(array);
+}
+
 jint JNICALL Java_lu_flier_script_V8Array_internalGetSize
   (JNIEnv *pEnv, jobject pObj, jlong pArray)
 {

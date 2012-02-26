@@ -310,6 +310,14 @@ JNIEXPORT jobject JNICALL Java_lu_flier_script_V8Array_internalGet
 JNIEXPORT jint JNICALL Java_lu_flier_script_V8Array_internalGetSize
   (JNIEnv *, jobject, jlong);
 
+/*
+ * Class:     lu_flier_script_V8Array
+ * Method:    internalToObjectArray
+ * Signature: (J)[Ljava/lang/Object;
+ */
+JNIEXPORT jobjectArray JNICALL Java_lu_flier_script_V8Array_internalToObjectArray
+  (JNIEnv *, jobject, jlong);
+
 #ifdef __cplusplus
 }
 #endif

@@ -674,18 +674,7 @@ jobject V8Env::Wrap(v8::Handle<v8::Object> obj)
   if (obj->IsArray())
   {
   #ifdef USE_NATIVE_ARRAY
-    v8::Handle<v8::Array> array = v8::Handle<v8::Array>::Cast(obj);
-
-    jobjectArray items = NewObjectArray(array->Length());
-
-    for (size_t i=0; i<array->Length(); i++)
-    {      
-      jobject item = Wrap(array->Get(i));
-      m_env->SetObjectArrayElement(items, i, item);
-      m_env->DeleteLocalRef(item);
-    }
-
-    return items;
+    return WrapArrayToNative(obj);
   #else
     return NewV8Array(v8::Handle<v8::Array>::Cast(obj));
   #endif
@@ -694,6 +683,37 @@ jobject V8Env::Wrap(v8::Handle<v8::Object> obj)
   if (CManagedObject::IsWrapped(obj)) return CManagedObject::Unwrap(obj).GetObject();
 
   return NewV8Object(obj);
+}
+
+jobjectArray V8Env::WrapArrayToNative(v8::Handle<v8::Value> obj)
+{
+  assert(v8::Context::InContext());
+  assert(obj->IsArray());
+
+  v8::HandleScope handle_scope;
+
+  v8::Handle<v8::Array> array = v8::Handle<v8::Array>::Cast(obj);
+
+  jobjectArray items = NewObjectArray(array->Length());
+
+  for (size_t i=0; i<array->Length(); i++)
+  {      
+    jobject item;
+    v8::Handle<v8::Value> obj = array->Get(i);
+
+    if (obj->IsArray()) 
+    {
+      item = WrapArrayToNative(obj);
+    } else 
+    {
+      item = Wrap(obj);
+    }
+
+    m_env->SetObjectArrayElement(items, i, item);
+    m_env->DeleteLocalRef(item);
+  }
+
+  return items;
 }
 
 v8::Handle<v8::Value> V8Env::Wrap(jobject value)

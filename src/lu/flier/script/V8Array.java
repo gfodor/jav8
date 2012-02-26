@@ -35,6 +35,12 @@ public class V8Array extends AbstractList<Object> implements V8ContextAware {
 		return internalGetSize(array.obj);
 	}
 
+    @Override
+    public Object[] toArray() {
+        return internalToObjectArray(array.obj);
+    }
+
 	private native Object internalGet(long obj, int index);
 	private native int internalGetSize(long obj);
+	private native Object[] internalToObjectArray(long obj);
 }

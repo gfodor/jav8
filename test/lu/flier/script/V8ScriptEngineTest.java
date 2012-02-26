@@ -204,7 +204,7 @@ public class V8ScriptEngineTest
 		g.clear();
 		assertTrue(g.isEmpty());
     }
-        
+
     @Test
     public void testGlobalBindings() throws ScriptException
     {
@@ -567,5 +567,26 @@ public class V8ScriptEngineTest
     	Runtime.getRuntime().gc();
     	
     	assertNull(ref.get());    	    
+    }
+
+    @Test 
+    public void testNestedToArray() throws ScriptException {
+        long total = 0;
+
+        Bindings g = this.eng.getBindings(ScriptContext.ENGINE_SCOPE);
+        this.eng.eval("var b = []; for (var i = 0; i < 1024; i++) { b[i] = [\"hello\" + i, \"world\" + i]; }");
+        V8Array arr = (V8Array)g.get("b");
+
+        Object[] vals = arr.toArray();
+
+        assertEquals(vals.length, 1024);
+
+        for (int i = 0; i < vals.length; i++) {
+            Object[] inner = (Object [])vals[i];
+
+            assertEquals(inner.length, 2);
+            assertEquals(inner[0], "hello" + i);
+            assertEquals(inner[1], "world" + i);
+        }
     }
 }
