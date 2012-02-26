@@ -163,10 +163,10 @@ JNIEXPORT jobject JNICALL Java_lu_flier_script_V8Context_internalCreateObject
 /*
  * Class:     lu_flier_script_V8Context
  * Method:    internalCreateArray
- * Signature: (I)Llu/flier/script/V8Array;
+ * Signature: ([Ljava/lang/Object;)Llu/flier/script/V8Array;
  */
 JNIEXPORT jobject JNICALL Java_lu_flier_script_V8Context_internalCreateArray
-  (JNIEnv *, jobject, jint);
+  (JNIEnv *, jobject, jobjectArray);
 
 /*
  * Class:     lu_flier_script_V8Context

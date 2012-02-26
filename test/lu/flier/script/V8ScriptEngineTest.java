@@ -569,6 +569,17 @@ public class V8ScriptEngineTest
     	assertNull(ref.get());    	    
     }
 
+    @Test
+    public void testCreateArray() throws ScriptException {
+    	V8Context ctxt = ((V8ScriptEngine) this.eng).getV8Context();
+        Bindings g = this.eng.getBindings(ScriptContext.ENGINE_SCOPE);
+        Object[] data = new Object[] { "hello", 123 };
+        V8Array arr = ctxt.createArray(data);
+        assertEquals(2, arr.size());
+        assertEquals("hello", arr.get(0));
+        assertEquals(123, arr.get(1));
+    }
+
     @Test 
     public void testNestedToArray() throws ScriptException {
         long total = 0;

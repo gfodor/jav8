@@ -234,10 +234,17 @@ JNIEXPORT jobject JNICALL Java_lu_flier_script_V8Context_internalCreateObject
 }
 
 JNIEXPORT jobject JNICALL Java_lu_flier_script_V8Context_internalCreateArray
-  (JNIEnv *pEnv, jobject, int size) {
+  (JNIEnv *pEnv, jobject, jobjectArray source) {
   jni::V8Env env(pEnv);
 
-  return env.NewV8Array(v8::Array::New(size));
+  int size = pEnv->GetArrayLength(source);
+  v8::Handle<v8::Array> array = v8::Array::New(size);
+
+  for (int i = 0; i < size; i++) {
+      array->Set(i, env.Wrap(pEnv->GetObjectArrayElement(source, i)));
+  }
+
+  return env.NewV8Array(array);
 }
 
 jobjectArray JNICALL Java_lu_flier_script_V8Object_internalGetKeys(JNIEnv *pEnv, jobject pObj)

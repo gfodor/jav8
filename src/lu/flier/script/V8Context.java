@@ -72,8 +72,8 @@ public class V8Context extends SimpleScriptContext
         return (V8Object)internalCreateObject().bindTo(this);
     }
 
-    public V8Array createArray(int size) {
-        return (V8Array)internalCreateArray(size).bindTo(this);
+    public V8Array createArray(Object[] contents) {
+        return (V8Array)internalCreateArray(contents).bindTo(this);
     }
 
 	public void dispose()
@@ -100,7 +100,7 @@ public class V8Context extends SimpleScriptContext
 	public native static V8Context getCalling();
 	public native static boolean inContext();
     public native V8Object internalCreateObject();
-    public native V8Array internalCreateArray(int size);
+    public native V8Array internalCreateArray(Object[] contents);
 	
 	public void enter()
 	{
